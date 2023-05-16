@@ -30,8 +30,10 @@ int fib(int n) {
 }
 
 class PerformancePage extends StatefulWidget {
+  const PerformancePage({super.key});
+
   @override
-  _PerformancePageState createState() => _PerformancePageState();
+  State<PerformancePage> createState() => _PerformancePageState();
 }
 
 class _PerformancePageState extends State<PerformancePage> {
@@ -43,22 +45,23 @@ class _PerformancePageState extends State<PerformancePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SmoothAnimationWidget(),
+          const SmoothAnimationWidget(),
           Container(
             alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(top: 150),
+            padding: const EdgeInsets.only(top: 150),
             child: Column(
               children: [
                 FutureBuilder(
                   future: computeFuture,
                   builder: (context, snapshot) {
                     return ElevatedButton(
-                      child: const Text('Compute on Main'),
                       style: ElevatedButton.styleFrom(elevation: 8.0),
-                      onPressed:
-                          snapshot.connectionState == ConnectionState.done
-                              ? () => handleComputeOnMain(context)
-                              : null,
+                      onPressed: switch (snapshot.connectionState) {
+                        ConnectionState.done => () =>
+                            handleComputeOnMain(context),
+                        _ => null
+                      },
+                      child: const Text('Compute on Main'),
                     );
                   },
                 ),
@@ -66,12 +69,13 @@ class _PerformancePageState extends State<PerformancePage> {
                   future: computeFuture,
                   builder: (context, snapshot) {
                     return ElevatedButton(
-                        child: const Text('Compute on Secondary'),
                         style: ElevatedButton.styleFrom(elevation: 8.0),
-                        onPressed:
-                            snapshot.connectionState == ConnectionState.done
-                                ? () => handleComputeOnSecondary(context)
-                                : null);
+                        onPressed: switch (snapshot.connectionState) {
+                          ConnectionState.done => () =>
+                              handleComputeOnSecondary(context),
+                          _ => null
+                        },
+                        child: const Text('Compute on Secondary'));
                   },
                 ),
               ],
@@ -85,7 +89,7 @@ class _PerformancePageState extends State<PerformancePage> {
   void handleComputeOnMain(BuildContext context) {
     var future = computeOnMainIsolate()
       ..then((_) {
-        var snackBar = SnackBar(
+        var snackBar = const SnackBar(
           content: Text('Main Isolate Done!'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -99,7 +103,7 @@ class _PerformancePageState extends State<PerformancePage> {
   void handleComputeOnSecondary(BuildContext context) {
     var future = computeOnSecondaryIsolate()
       ..then((_) {
-        var snackBar = SnackBar(
+        var snackBar = const SnackBar(
           content: Text('Secondary Isolate Done!'),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -114,7 +118,7 @@ class _PerformancePageState extends State<PerformancePage> {
     // A delay is added here to give Flutter the chance to redraw the UI at
     // least once before the computation (which, since it's run on the main
     // isolate, will lock up the app) begins executing.
-    await Future<void>.delayed(Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 100));
     fib(45);
   }
 
@@ -125,14 +129,16 @@ class _PerformancePageState extends State<PerformancePage> {
 }
 
 class SmoothAnimationWidget extends StatefulWidget {
+  const SmoothAnimationWidget({super.key});
+
   @override
-  SmoothAnimationWidgetState createState() => SmoothAnimationWidgetState();
+  State<SmoothAnimationWidget> createState() => _SmoothAnimationWidgetState();
 }
 
-class SmoothAnimationWidgetState extends State<SmoothAnimationWidget>
+class _SmoothAnimationWidgetState extends State<SmoothAnimationWidget>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
-  late final Animation<BorderRadius> _borderAnimation;
+  late final Animation<BorderRadius?> _borderAnimation;
 
   @override
   void initState() {
@@ -156,14 +162,11 @@ class SmoothAnimationWidgetState extends State<SmoothAnimationWidget>
         animation: _borderAnimation,
         builder: (context, child) {
           return Container(
-            child: FlutterLogo(
-              size: 200,
-            ),
             alignment: Alignment.bottomCenter,
             width: 350,
             height: 200,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 colors: [
                   Colors.blueAccent,
@@ -171,6 +174,9 @@ class SmoothAnimationWidgetState extends State<SmoothAnimationWidget>
                 ],
               ),
               borderRadius: _borderAnimation.value,
+            ),
+            child: const FlutterLogo(
+              size: 200,
             ),
           );
         },

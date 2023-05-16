@@ -17,6 +17,8 @@ import 'package:jsonexample/utils.dart';
 import 'package:jsonexample/widgets.dart';
 
 class BasicsPage extends StatelessWidget {
+  const BasicsPage({super.key});
+
   List<TableRow> createMapRows(
       Map<String, dynamic> values, TextStyle normalStyle, TextStyle boldStyle) {
     return values.keys.map((k) {
@@ -39,7 +41,7 @@ class BasicsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final localTheme = Theme.of(context).textTheme;
     final boldStyle =
-        localTheme.bodyText2!.copyWith(fontWeight: FontWeight.w600);
+        localTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w600);
 
     final dynamicListOfInts = json.decode(JsonStrings.listOfInts) as List;
     final strongListOfInts = List<int>.from(dynamicListOfInts);
@@ -74,7 +76,7 @@ class BasicsPage extends StatelessWidget {
                 ),
                 Text(
                   prettyPrintList(strongListOfInts),
-                  style: localTheme.bodyText2,
+                  style: localTheme.bodyMedium,
                 ),
               ],
             ),
@@ -86,7 +88,7 @@ class BasicsPage extends StatelessWidget {
                 ),
                 Text(
                   prettyPrintList(strongListOfStrings),
-                  style: localTheme.bodyText2,
+                  style: localTheme.bodyMedium,
                 ),
               ],
             ),
@@ -98,7 +100,7 @@ class BasicsPage extends StatelessWidget {
                 ),
                 Text(
                   prettyPrintList(strongListOfDoubles),
-                  style: localTheme.bodyText2,
+                  style: localTheme.bodyMedium,
                 ),
               ],
             ),
@@ -110,7 +112,7 @@ class BasicsPage extends StatelessWidget {
                 ),
                 Text(
                   prettyPrintList(strongListOfDynamics),
-                  style: localTheme.bodyText2,
+                  style: localTheme.bodyMedium,
                 ),
               ],
             ),
@@ -134,7 +136,7 @@ class BasicsPage extends StatelessWidget {
             },
             children: createMapRows(
               strongMapOfDynamics,
-              localTheme.bodyText2!,
+              localTheme.bodyMedium!,
               boldStyle,
             ),
           ),
@@ -145,6 +147,8 @@ class BasicsPage extends StatelessWidget {
 }
 
 class ConvertedSimplePage extends StatelessWidget {
+  const ConvertedSimplePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.simpleObjects.map(
@@ -158,7 +162,7 @@ class ConvertedSimplePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(objects),
+        SimpleObjectViewList(simpleObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -166,6 +170,8 @@ class ConvertedSimplePage extends StatelessWidget {
 }
 
 class ConvertedComplexPage extends StatelessWidget {
+  const ConvertedComplexPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.complexObjects.map(
@@ -179,7 +185,7 @@ class ConvertedComplexPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        ComplexObjectViewList(objects),
+        ComplexObjectViewList(complexObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -187,6 +193,8 @@ class ConvertedComplexPage extends StatelessWidget {
 }
 
 class ConvertedListPage extends StatelessWidget {
+  const ConvertedListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final parsedJson = json.decode(JsonStrings.listOfSimpleObjects) as List;
@@ -200,7 +208,7 @@ class ConvertedListPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(listOfObjects),
+        SimpleObjectViewList(simpleObjects: listOfObjects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -208,6 +216,8 @@ class ConvertedListPage extends StatelessWidget {
 }
 
 class SerializableSimplePage extends StatelessWidget {
+  const SerializableSimplePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.simpleObjects.map(
@@ -221,7 +231,7 @@ class SerializableSimplePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(objects),
+        SimpleObjectViewList(simpleObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -229,6 +239,8 @@ class SerializableSimplePage extends StatelessWidget {
 }
 
 class SerializableComplexPage extends StatelessWidget {
+  const SerializableComplexPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.complexObjects.map(
@@ -242,7 +254,7 @@ class SerializableComplexPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        ComplexObjectViewList(objects),
+        ComplexObjectViewList(complexObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -250,6 +262,8 @@ class SerializableComplexPage extends StatelessWidget {
 }
 
 class SerializableListPage extends StatelessWidget {
+  const SerializableListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final parsedJson = json.decode(JsonStrings.listOfSimpleObjects) as List;
@@ -263,7 +277,7 @@ class SerializableListPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(listOfObjects),
+        SimpleObjectViewList(simpleObjects: listOfObjects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -271,6 +285,8 @@ class SerializableListPage extends StatelessWidget {
 }
 
 class BuiltSimplePage extends StatelessWidget {
+  const BuiltSimplePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.simpleObjects.map(
@@ -285,7 +301,7 @@ class BuiltSimplePage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(objects),
+        SimpleObjectViewList(simpleObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -293,6 +309,8 @@ class BuiltSimplePage extends StatelessWidget {
 }
 
 class BuiltComplexPage extends StatelessWidget {
+  const BuiltComplexPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var objects = JsonStrings.complexObjects.map(
@@ -307,7 +325,7 @@ class BuiltComplexPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        ComplexObjectViewList(objects),
+        ComplexObjectViewList(complexObjects: objects),
         const SizedBox(height: 16.0),
       ],
     );
@@ -315,6 +333,8 @@ class BuiltComplexPage extends StatelessWidget {
 }
 
 class BuiltListPage extends StatelessWidget {
+  const BuiltListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final parsedJson = json.decode(JsonStrings.listOfSimpleObjects) as List;
@@ -329,7 +349,7 @@ class BuiltListPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       children: [
         const SizedBox(height: 16.0),
-        SimpleObjectViewList(listOfObjects),
+        SimpleObjectViewList(simpleObjects: listOfObjects),
         const SizedBox(height: 16.0),
       ],
     );

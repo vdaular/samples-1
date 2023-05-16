@@ -5,15 +5,16 @@
 import 'package:flutter/material.dart';
 
 class ExpandCardDemo extends StatelessWidget {
-  static const String routeName = '/misc/expand_card';
+  const ExpandCardDemo({super.key});
+  static const String routeName = 'misc/expand_card';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expandable Card'),
+        title: const Text('Expandable Card'),
       ),
-      body: Center(
+      body: const Center(
         child: ExpandCard(),
       ),
     );
@@ -21,8 +22,9 @@ class ExpandCardDemo extends StatelessWidget {
 }
 
 class ExpandCard extends StatefulWidget {
+  const ExpandCard({super.key});
   @override
-  _ExpandCardState createState() => _ExpandCardState();
+  State<ExpandCard> createState() => _ExpandCardState();
 }
 
 class _ExpandCardState extends State<ExpandCard>

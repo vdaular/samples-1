@@ -2,33 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'place.dart';
+import 'place_tracker_app.dart';
 import 'stub_data.dart';
 
 class PlaceDetails extends StatefulWidget {
   final Place place;
-  final ValueChanged<Place> onChanged;
 
   const PlaceDetails({
-    @required this.place,
-    @required this.onChanged,
-    Key key,
-  })  : assert(place != null),
-        assert(onChanged != null),
-        super(key: key);
+    required this.place,
+    super.key,
+  });
 
   @override
-  PlaceDetailsState createState() => PlaceDetailsState();
+  State<PlaceDetails> createState() => _PlaceDetailsState();
 }
 
-class PlaceDetailsState extends State<PlaceDetails> {
-  Place _place;
-  GoogleMapController _mapController;
+class _PlaceDetailsState extends State<PlaceDetails> {
+  late Place _place;
+  GoogleMapController? _mapController;
   final Set<Marker> _markers = {};
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -37,7 +33,7 @@ class PlaceDetailsState extends State<PlaceDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_place.name}'),
+        title: Text(_place.name),
         backgroundColor: Colors.green[700],
         actions: [
           Padding(
@@ -45,7 +41,7 @@ class PlaceDetailsState extends State<PlaceDetails> {
             child: IconButton(
               icon: const Icon(Icons.save, size: 30.0),
               onPressed: () {
-                widget.onChanged(_place);
+                _onChanged(_place);
                 Navigator.pop(context);
               },
             ),
@@ -65,7 +61,7 @@ class PlaceDetailsState extends State<PlaceDetails> {
   void initState() {
     _place = widget.place;
     _nameController.text = _place.name;
-    _descriptionController.text = _place.description;
+    _descriptionController.text = _place.description ?? '';
     return super.initState();
   }
 
@@ -117,19 +113,26 @@ class PlaceDetailsState extends State<PlaceDetails> {
       ));
     });
   }
+
+  void _onChanged(Place value) {
+    // Replace the place with the modified version.
+    final newPlaces = List<Place>.from(context.read<AppState>().places);
+    final index = newPlaces.indexWhere((place) => place.id == value.id);
+    newPlaces[index] = value;
+
+    context.read<AppState>().setPlaces(newPlaces);
+  }
 }
 
 class _DescriptionTextField extends StatelessWidget {
   final TextEditingController controller;
 
   final ValueChanged<String> onChanged;
+
   const _DescriptionTextField({
-    @required this.controller,
-    @required this.onChanged,
-    Key key,
-  })  : assert(controller != null),
-        assert(onChanged != null),
-        super(key: key);
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -155,18 +158,16 @@ class _DescriptionTextField extends StatelessWidget {
 class _Map extends StatelessWidget {
   final LatLng center;
 
-  final GoogleMapController mapController;
+  final GoogleMapController? mapController;
   final ArgumentCallback<GoogleMapController> onMapCreated;
   final Set<Marker> markers;
+
   const _Map({
-    @required this.center,
-    @required this.mapController,
-    @required this.onMapCreated,
-    @required this.markers,
-    Key key,
-  })  : assert(center != null),
-        assert(onMapCreated != null),
-        super(key: key);
+    required this.center,
+    required this.mapController,
+    required this.onMapCreated,
+    required this.markers,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -197,13 +198,11 @@ class _NameTextField extends StatelessWidget {
   final TextEditingController controller;
 
   final ValueChanged<String> onChanged;
+
   const _NameTextField({
-    @required this.controller,
-    @required this.onChanged,
-    Key key,
-  })  : assert(controller != null),
-        assert(onChanged != null),
-        super(key: key);
+    required this.controller,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -226,9 +225,7 @@ class _NameTextField extends StatelessWidget {
 }
 
 class _Reviews extends StatelessWidget {
-  const _Reviews({
-    Key key,
-  }) : super(key: key);
+  const _Reviews();
 
   @override
   Widget build(BuildContext context) {
@@ -275,9 +272,9 @@ class _Reviews extends StatelessWidget {
                     color: Colors.grey,
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Text(
                       '5',
                       style: TextStyle(
@@ -319,13 +316,11 @@ class _StarBar extends StatelessWidget {
 
   final int rating;
   final ValueChanged<int> onChanged;
+
   const _StarBar({
-    @required this.rating,
-    @required this.onChanged,
-    Key key,
-  })  : assert(rating != null && rating >= 0 && rating <= maxStars),
-        assert(onChanged != null),
-        super(key: key);
+    required this.rating,
+    required this.onChanged,
+  }) : assert(rating >= 0 && rating <= maxStars);
 
   @override
   Widget build(BuildContext context) {

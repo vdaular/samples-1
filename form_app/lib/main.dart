@@ -2,8 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:go_router/go_router.dart';
+import 'package:window_size/window_size.dart';
 
 import 'src/autofill.dart';
 import 'src/form_widgets.dart';
@@ -11,75 +15,115 @@ import 'src/http/mock_client.dart';
 import 'src/sign_in_http.dart';
 import 'src/validation.dart';
 
-// Set up a mock HTTP client.
-final http.Client httpClient = MockClient();
-
 void main() {
-  runApp(FormApp());
+  setupWindow();
+  runApp(const FormApp());
+}
+
+const double windowWidth = 480;
+const double windowHeight = 854;
+
+void setupWindow() {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    WidgetsFlutterBinding.ensureInitialized();
+    setWindowTitle('Form Samples');
+    setWindowMinSize(const Size(windowWidth, windowHeight));
+    setWindowMaxSize(const Size(windowWidth, windowHeight));
+    getCurrentScreen().then((screen) {
+      setWindowFrame(Rect.fromCenter(
+        center: screen!.frame.center,
+        width: windowWidth,
+        height: windowHeight,
+      ));
+    });
+  }
 }
 
 final demos = [
   Demo(
     name: 'Sign in with HTTP',
-    route: '/signin_http',
+    route: 'signin_http',
     builder: (context) => SignInHttpDemo(
-      httpClient: httpClient,
+      // This sample uses a mock HTTP client.
+      httpClient: mockClient,
     ),
   ),
   Demo(
     name: 'Autofill',
-    route: '/autofill',
-    builder: (context) => AutofillDemo(),
+    route: 'autofill',
+    builder: (context) => const AutofillDemo(),
   ),
   Demo(
     name: 'Form widgets',
-    route: '/form_widgets',
-    builder: (context) => FormWidgetsDemo(),
+    route: 'form_widgets',
+    builder: (context) => const FormWidgetsDemo(),
   ),
   Demo(
     name: 'Validation',
-    route: '/validation',
-    builder: (context) => FormValidationDemo(),
+    route: 'validation',
+    builder: (context) => const FormValidationDemo(),
   ),
 ];
 
+final router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const HomePage(),
+      routes: [
+        for (final demo in demos)
+          GoRoute(
+            path: demo.route,
+            builder: (context, state) => demo.builder(context),
+          ),
+      ],
+    ),
+  ],
+);
+
 class FormApp extends StatelessWidget {
+  const FormApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Form Samples',
-      theme: ThemeData(primarySwatch: Colors.teal),
-      routes: Map.fromEntries(demos.map((d) => MapEntry(d.route, d.builder))),
-      home: HomePage(),
+      theme: ThemeData(
+        colorSchemeSeed: Colors.teal,
+        useMaterial3: true,
+      ),
+      routerConfig: router,
     );
   }
 }
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Form Samples'),
+        title: const Text('Form Samples'),
       ),
       body: ListView(
-        children: [...demos.map((d) => DemoTile(d))],
+        children: [...demos.map((d) => DemoTile(demo: d))],
       ),
     );
   }
 }
 
 class DemoTile extends StatelessWidget {
-  final Demo demo;
+  final Demo? demo;
 
-  DemoTile(this.demo);
+  const DemoTile({this.demo, super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(demo.name),
+      title: Text(demo!.name),
       onTap: () {
-        Navigator.pushNamed(context, demo.route);
+        context.go('/${demo!.route}');
       },
     );
   }
@@ -90,5 +134,5 @@ class Demo {
   final String route;
   final WidgetBuilder builder;
 
-  const Demo({this.name, this.route, this.builder});
+  const Demo({required this.name, required this.route, required this.builder});
 }

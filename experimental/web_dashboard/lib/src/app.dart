@@ -18,7 +18,7 @@ import 'pages/sign_in.dart';
 /// The global state the app.
 class AppState {
   final Auth auth;
-  DashboardApi api;
+  DashboardApi? api;
 
   AppState(this.auth);
 }
@@ -26,35 +26,36 @@ class AppState {
 /// Creates a [DashboardApi] for the given user. This allows users of this
 /// widget to specify whether [MockDashboardApi] or [ApiBuilder] should be
 /// created when the user logs in.
-typedef DashboardApi ApiBuilder(User user);
+typedef ApiBuilder = DashboardApi Function(User user);
 
 /// An app that displays a personalized dashboard.
 class DashboardApp extends StatefulWidget {
-  static ApiBuilder _mockApiBuilder =
-      (user) => MockDashboardApi()..fillWithMockData();
-  static ApiBuilder _apiBuilder =
-      (user) => FirebaseDashboardApi(Firestore.instance, user.uid);
+  static DashboardApi _mockApiBuilder(User user) =>
+      MockDashboardApi()..fillWithMockData();
+  static DashboardApi _apiBuilder(User user) =>
+      FirebaseDashboardApi(FirebaseFirestore.instance, user.uid);
 
   final Auth auth;
   final ApiBuilder apiBuilder;
 
   /// Runs the app using Firebase
-  DashboardApp.firebase()
+  DashboardApp.firebase({super.key})
       : auth = FirebaseAuthService(),
         apiBuilder = _apiBuilder;
 
   /// Runs the app using mock data
-  DashboardApp.mock()
+  DashboardApp.mock({super.key})
       : auth = MockAuthService(),
         apiBuilder = _mockApiBuilder;
 
   @override
-  _DashboardAppState createState() => _DashboardAppState();
+  State<DashboardApp> createState() => _DashboardAppState();
 }
 
 class _DashboardAppState extends State<DashboardApp> {
-  AppState _appState;
+  late final AppState _appState;
 
+  @override
   void initState() {
     super.initState();
     _appState = AppState(widget.auth);
@@ -77,16 +78,17 @@ class _DashboardAppState extends State<DashboardApp> {
 /// Switches between showing the [SignInPage] or [HomePage], depending on
 /// whether or not the user is signed in.
 class SignInSwitcher extends StatefulWidget {
-  final AppState appState;
-  final ApiBuilder apiBuilder;
+  final AppState? appState;
+  final ApiBuilder? apiBuilder;
 
-  SignInSwitcher({
+  const SignInSwitcher({
     this.appState,
     this.apiBuilder,
+    super.key,
   });
 
   @override
-  _SignInSwitcherState createState() => _SignInSwitcherState();
+  State<SignInSwitcher> createState() => _SignInSwitcherState();
 }
 
 class _SignInSwitcherState extends State<SignInSwitcher> {
@@ -97,20 +99,20 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
     return AnimatedSwitcher(
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeOut,
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       child: _isSignedIn
           ? HomePage(
               onSignOut: _handleSignOut,
             )
           : SignInPage(
-              auth: widget.appState.auth,
+              auth: widget.appState!.auth,
               onSuccess: _handleSignIn,
             ),
     );
   }
 
   void _handleSignIn(User user) {
-    widget.appState.api = widget.apiBuilder(user);
+    widget.appState!.api = widget.apiBuilder!(user);
 
     setState(() {
       _isSignedIn = true;
@@ -118,7 +120,7 @@ class _SignInSwitcherState extends State<SignInSwitcher> {
   }
 
   Future _handleSignOut() async {
-    await widget.appState.auth.signOut();
+    await widget.appState!.auth.signOut();
     setState(() {
       _isSignedIn = false;
     });

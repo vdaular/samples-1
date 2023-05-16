@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 
 class FormWidgetsDemo extends StatefulWidget {
+  const FormWidgetsDemo({super.key});
+
   @override
-  _FormWidgetsDemoState createState() => _FormWidgetsDemoState();
+  State<FormWidgetsDemo> createState() => _FormWidgetsDemoState();
 }
 
 class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
@@ -16,14 +18,14 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
   String description = '';
   DateTime date = DateTime.now();
   double maxValue = 0;
-  bool brushedTeeth = false;
+  bool? brushedTeeth = false;
   bool enableFeature = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Form widgets'),
+        title: const Text('Form widgets'),
       ),
       body: Form(
         key: _formKey,
@@ -32,16 +34,16 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
             alignment: Alignment.topCenter,
             child: Card(
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 400),
+                  constraints: const BoxConstraints(maxWidth: 400),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ...[
                         TextFormField(
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             filled: true,
                             hintText: 'Enter a title...',
                             labelText: 'Title',
@@ -53,8 +55,8 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                           },
                         ),
                         TextFormField(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
                             filled: true,
                             hintText: 'Enter a description...',
                             labelText: 'Description',
@@ -81,7 +83,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                               children: [
                                 Text(
                                   'Estimated value',
-                                  style: Theme.of(context).textTheme.bodyText1,
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               ],
                             ),
@@ -89,7 +91,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                               intl.NumberFormat.currency(
                                       symbol: "\$", decimalDigits: 0)
                                   .format(maxValue),
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Slider(
                               min: 0,
@@ -117,7 +119,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                               },
                             ),
                             Text('Brushed Teeth',
-                                style: Theme.of(context).textTheme.subtitle1),
+                                style: Theme.of(context).textTheme.titleMedium),
                           ],
                         ),
                         Row(
@@ -125,7 +127,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text('Enable feature',
-                                style: Theme.of(context).textTheme.bodyText1),
+                                style: Theme.of(context).textTheme.bodyLarge),
                             Switch(
                               value: enableFeature,
                               onChanged: (enabled) {
@@ -139,7 +141,7 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
                       ].expand(
                         (widget) => [
                           widget,
-                          SizedBox(
+                          const SizedBox(
                             height: 24,
                           )
                         ],
@@ -158,15 +160,15 @@ class _FormWidgetsDemoState extends State<FormWidgetsDemo> {
 
 class _FormDatePicker extends StatefulWidget {
   final DateTime date;
-  final ValueChanged onChanged;
+  final ValueChanged<DateTime> onChanged;
 
-  _FormDatePicker({
-    this.date,
-    this.onChanged,
+  const _FormDatePicker({
+    required this.date,
+    required this.onChanged,
   });
 
   @override
-  _FormDatePickerState createState() => _FormDatePickerState();
+  State<_FormDatePicker> createState() => _FormDatePickerState();
 }
 
 class _FormDatePickerState extends State<_FormDatePicker> {
@@ -182,16 +184,16 @@ class _FormDatePickerState extends State<_FormDatePicker> {
           children: [
             Text(
               'Date',
-              style: Theme.of(context).textTheme.bodyText1,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
             Text(
               intl.DateFormat.yMd().format(widget.date),
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
         ),
         TextButton(
-          child: Text('Edit'),
+          child: const Text('Edit'),
           onPressed: () async {
             var newDate = await showDatePicker(
               context: context,

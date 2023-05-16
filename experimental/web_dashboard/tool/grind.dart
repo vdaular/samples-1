@@ -3,9 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 import 'dart:convert';
 import 'dart:io';
-import 'package:path/path.dart' as path;
 
 import 'package:grinder/grinder.dart';
+import 'package:path/path.dart' as path;
 
 void main(List<String> args) => grind(args);
 
@@ -82,7 +82,7 @@ Future copyright() async {
 Future fixCopyright() async {
   await for (var file in _filesWithoutCopyright()) {
     var contents = await file.readAsString();
-    await file.writeAsString(_copyright + '\n\n' + contents);
+    await file.writeAsString('$_copyright\n\n$contents');
   }
 }
 
@@ -95,11 +95,11 @@ Stream<File> _filesWithoutCopyright() async* {
     var firstThreeLines = await file
         .openRead()
         .transform(utf8.decoder)
-        .transform(LineSplitter())
+        .transform(const LineSplitter())
         .take(3)
         .fold<String>('', (previous, element) {
       if (previous == '') return element;
-      return previous + '\n' + element;
+      return '$previous\n$element';
     });
 
     if (firstThreeLines != _copyright) {

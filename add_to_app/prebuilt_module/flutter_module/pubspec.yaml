@@ -4,19 +4,21 @@ description: An example Flutter module.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.6.0-dev <3.0.0"
+  sdk: '>=2.19.5 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^4.0.2
+  provider: ^6.0.2
 
 dev_dependencies:
+  analysis_defaults:
+    path: ../../../analysis_defaults
   flutter_test:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  espresso: ^0.0.1+2
+  espresso: ">=0.2.0 <0.4.0"
 
 flutter:
   uses-material-design: true

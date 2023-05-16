@@ -19,16 +19,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InfiniteProcessPageStarter extends StatelessWidget {
+  const InfiniteProcessPageStarter({super.key});
+
   @override
   Widget build(context) {
     return ChangeNotifierProvider(
       create: (context) => InfiniteProcessIsolateController(),
-      child: InfiniteProcessPage(),
+      child: const InfiniteProcessPage(),
     );
   }
 }
 
 class InfiniteProcessPage extends StatelessWidget {
+  const InfiniteProcessPage({super.key});
+
   @override
   Widget build(context) {
     final controller = Provider.of<InfiniteProcessIsolateController>(context);
@@ -41,10 +45,10 @@ class InfiniteProcessPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'Summation Results',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          Expanded(
+          const Expanded(
             child: RunningList(),
           ),
           Column(
@@ -54,14 +58,14 @@ class InfiniteProcessPage extends StatelessWidget {
                 alignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    child: const Text('Start'),
                     style: ElevatedButton.styleFrom(elevation: 8.0),
                     onPressed: () => controller.start(),
+                    child: const Text('Start'),
                   ),
                   ElevatedButton(
-                    child: const Text('Terminate'),
                     style: ElevatedButton.styleFrom(elevation: 8.0),
                     onPressed: () => controller.terminate(),
+                    child: const Text('Terminate'),
                   ),
                 ],
               ),
@@ -76,7 +80,7 @@ class InfiniteProcessPage extends StatelessWidget {
                     inactiveTrackColor: Colors.deepOrangeAccent,
                     inactiveThumbColor: Colors.black,
                   ),
-                  Text('Pause/Resume'),
+                  const Text('Pause/Resume'),
                 ],
               ),
               Row(
@@ -127,11 +131,12 @@ class InfiniteProcessIsolateController extends ChangeNotifier {
 
   void listen() {
     receivePort.listen((dynamic message) {
-      if (message is SendPort) {
-        newIceSP = message;
-        newIceSP.send(_currentMultiplier);
-      } else if (message is int) {
-        setCurrentResults(message);
+      switch (message) {
+        case SendPort():
+          newIceSP = message;
+          newIceSP.send(_currentMultiplier);
+        case int():
+          setCurrentResults(message);
       }
     });
   }
@@ -183,6 +188,8 @@ class InfiniteProcessIsolateController extends ChangeNotifier {
 }
 
 class RunningList extends StatelessWidget {
+  const RunningList({super.key});
+
   @override
   Widget build(context) {
     final controller = Provider.of<InfiniteProcessIsolateController>(context);
@@ -199,15 +206,15 @@ class RunningList extends StatelessWidget {
           return Column(
             children: [
               Card(
+                color: (controller.created && !controller.paused)
+                    ? Colors.lightGreenAccent
+                    : Colors.deepOrangeAccent,
                 child: ListTile(
                   leading: Text('${sums.length - index}.'),
                   title: Text('${sums[index]}.'),
                 ),
-                color: (controller.created && !controller.paused)
-                    ? Colors.lightGreenAccent
-                    : Colors.deepOrangeAccent,
               ),
-              Divider(
+              const Divider(
                 color: Colors.blue,
                 height: 3,
               ),

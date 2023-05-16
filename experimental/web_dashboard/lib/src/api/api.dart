@@ -15,9 +15,9 @@ abstract class DashboardApi {
 
 /// Manipulates [Category] data.
 abstract class CategoryApi {
-  Future<Category> delete(String id);
+  Future<Category?> delete(String id);
 
-  Future<Category> get(String id);
+  Future<Category?> get(String id);
 
   Future<Category> insert(Category category);
 
@@ -30,9 +30,9 @@ abstract class CategoryApi {
 
 /// Manipulates [Entry] data.
 abstract class EntryApi {
-  Future<Entry> delete(String categoryId, String id);
+  Future<Entry?> delete(String categoryId, String id);
 
-  Future<Entry> get(String categoryId, String id);
+  Future<Entry?> get(String categoryId, String id);
 
   Future<Entry> insert(String categoryId, Entry entry);
 
@@ -48,8 +48,8 @@ abstract class EntryApi {
 class Category {
   String name;
 
-  @JsonKey(ignore: true)
-  String id;
+  @JsonKey(includeFromJson: false)
+  String? id;
 
   Category(this.name);
 
@@ -75,8 +75,8 @@ class Entry {
   @JsonKey(fromJson: _timestampToDateTime, toJson: _dateTimeToTimestamp)
   DateTime time;
 
-  @JsonKey(ignore: true)
-  String id;
+  @JsonKey(includeFromJson: false)
+  String? id;
 
   Entry(this.value, this.time);
 

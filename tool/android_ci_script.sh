@@ -2,6 +2,8 @@
 
 set -e
 
+flutter doctor -v
+
 echo "Fetching dependencies and building 'prebuilt_module/flutter_module/'."
 pushd add_to_app/prebuilt_module/flutter_module/
 flutter packages get
@@ -35,6 +37,7 @@ do
     echo "== Testing '${PROJECT_NAME}' on Flutter's stable channel =="
     pushd "${PROJECT_NAME}"
 
+    gradle wrapper
     ./gradlew --stacktrace assembleDebug
     ./gradlew --stacktrace assembleRelease
 

@@ -3,18 +3,21 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_shopper/models/cart.dart';
 import 'package:provider_shopper/models/catalog.dart';
 
 class MyCatalog extends StatelessWidget {
+  const MyCatalog({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           _MyAppBar(),
-          SliverToBoxAdapter(child: SizedBox(height: 12)),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
           SliverList(
             delegate: SliverChildBuilderDelegate(
                 (context, index) => _MyListItem(index)),
@@ -28,7 +31,7 @@ class MyCatalog extends StatelessWidget {
 class _AddButton extends StatelessWidget {
   final Item item;
 
-  const _AddButton({required this.item, Key? key}) : super(key: key);
+  const _AddButton({required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +65,9 @@ class _AddButton extends StatelessWidget {
           return null; // Defer to the widget's default.
         }),
       ),
-      child: isInCart ? Icon(Icons.check, semanticLabel: 'ADDED') : Text('ADD'),
+      child: isInCart
+          ? const Icon(Icons.check, semanticLabel: 'ADDED')
+          : const Text('ADD'),
     );
   }
 }
@@ -71,12 +76,12 @@ class _MyAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      title: Text('Catalog', style: Theme.of(context).textTheme.headline1),
+      title: Text('Catalog', style: Theme.of(context).textTheme.displayLarge),
       floating: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.shopping_cart),
-          onPressed: () => Navigator.pushNamed(context, '/cart'),
+          icon: const Icon(Icons.shopping_cart),
+          onPressed: () => context.go('/catalog/cart'),
         ),
       ],
     );
@@ -86,7 +91,7 @@ class _MyAppBar extends StatelessWidget {
 class _MyListItem extends StatelessWidget {
   final int index;
 
-  _MyListItem(this.index, {Key? key}) : super(key: key);
+  const _MyListItem(this.index);
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +100,7 @@ class _MyListItem extends StatelessWidget {
       // about any other change.
       (catalog) => catalog.getByPosition(index),
     );
-    var textTheme = Theme.of(context).textTheme.headline6;
+    var textTheme = Theme.of(context).textTheme.titleLarge;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -109,11 +114,11 @@ class _MyListItem extends StatelessWidget {
                 color: item.color,
               ),
             ),
-            SizedBox(width: 24),
+            const SizedBox(width: 24),
             Expanded(
               child: Text(item.name, style: textTheme),
             ),
-            SizedBox(width: 24),
+            const SizedBox(width: 24),
             _AddButton(item: item),
           ],
         ),

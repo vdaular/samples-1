@@ -4,34 +4,42 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:platform_channels/src/pet_list_message_channel.dart';
 
 /// Demonstrates how to use [BasicMessageChannel] to send & receive the platform
 /// Message.
 class PetListScreen extends StatefulWidget {
+  const PetListScreen({super.key});
+
   @override
-  _PetListScreenState createState() => _PetListScreenState();
+  State<PetListScreen> createState() => _PetListScreenState();
 }
 
 class _PetListScreenState extends State<PetListScreen> {
-  PetListModel petListModel;
+  PetListModel petListModel = PetListModel(petList: []);
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     // Receives a string of json object from the platform and converts it
     // to PetModel.
-    BasicMessageChannel('stringCodecDemo', StringCodec())
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    const BasicMessageChannel<String?>('stringCodecDemo', StringCodec())
         .setMessageHandler((message) async {
       if (message == null) {
-        showSnackBar('An error occurred while adding pet details.', context);
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('An error occurred while adding pet details.'),
+          ),
+        );
       } else {
         setState(() {
           petListModel = PetListModel.fromJson(message);
         });
       }
-      return;
+      return null;
     });
   }
 
@@ -40,16 +48,16 @@ class _PetListScreenState extends State<PetListScreen> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: Text('Pet List'),
+        title: const Text('Pet List'),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.pushNamed(context, '/addPetDetails');
+          context.go('/petListScreen/addPetDetails');
         },
       ),
-      body: petListModel?.petList?.isEmpty ?? true
-          ? Center(child: Text('Enter Pet Details'))
+      body: petListModel.petList.isEmpty
+          ? const Center(child: Text('Enter Pet Details'))
           : BuildPetList(petListModel.petList),
     );
   }
@@ -59,12 +67,12 @@ class _PetListScreenState extends State<PetListScreen> {
 class BuildPetList extends StatelessWidget {
   final List<PetDetails> petList;
 
-  BuildPetList(this.petList);
+  const BuildPetList(this.petList, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       itemCount: petList.length,
       itemBuilder: (context, index) {
         return ListTile(
@@ -73,13 +81,18 @@ class BuildPetList extends StatelessWidget {
             'Pet type: ${petList[index].petType}',
           ),
           trailing: IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () async {
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
               try {
                 await PetListMessageChannel.removePet(index);
-                showSnackBar('Removed successfully!', context);
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(content: Text('Removed successfully!')),
+                );
               } catch (error) {
-                showSnackBar(error.message.toString(), context);
+                scaffoldMessenger.showSnackBar(SnackBar(
+                  content: Text((error as PlatformException).message!),
+                ));
               }
             },
           ),
@@ -87,10 +100,4 @@ class BuildPetList extends StatelessWidget {
       },
     );
   }
-}
-
-void showSnackBar(String message, BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(message),
-  ));
 }

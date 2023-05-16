@@ -6,15 +6,16 @@ description: A Flutter module using the Pigeon package to demonstrate
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.19.5 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
 
 dev_dependencies:
-  pigeon: ^0.1.0
-  mockito: ^4.1.1
+  analysis_defaults:
+    path: ../../../analysis_defaults
+  pigeon: ">=2.0.2 <11.0.0"
   flutter_test:
     sdk: flutter
 

@@ -4,21 +4,21 @@
 
 import 'dart:io';
 
+import 'package:html/parser.dart' show parse;
+import 'package:path/path.dart' as path;
 import 'package:samples_index/src/data.dart';
 
 /// Utilities for generating cookbook article data
-import 'package:webdriver/io.dart';
-import 'package:html/parser.dart' show parse;
-import 'package:path/path.dart' as path;
+import 'package:webdriver/async_io.dart';
 
 class CookbookScraper {
-  WebDriver _driver;
+  late WebDriver _driver;
 
-  Future init() async {
-    _driver = await createDriver(desired: {});
+  Future<void> init() async {
+    _driver = await createDriver(desired: <String, dynamic>{});
   }
 
-  Future dispose() async {
+  Future<void> dispose() async {
     await _driver.quit();
   }
 
@@ -36,7 +36,12 @@ class CookbookScraper {
     await _driver.get(Uri.parse(url));
     var pageContent = await _driver.pageSource;
     var page = parse(pageContent);
-    var name = page.querySelector('main>.container>header>h1').text;
+    var search = 'main>.container>header>h1';
+    var h1 = page.querySelector(search);
+    if (h1 == null) {
+      throw ('Could not find match for $search on page $url');
+    }
+    var name = h1.text;
     var description = page.querySelectorAll('main>.container>p').first.text;
 
     var urlSegments = Uri.parse(url).pathSegments;
@@ -50,10 +55,11 @@ class CookbookScraper {
       screenshots: [Screenshot(screenshotPath(url), 'Cookbook article')],
       tags: ['cookbook', category],
       source: url,
+      difficulty: 'advanced',
     );
   }
 
-  Future takeScreenshot(String url) async {
+  Future<void> takeScreenshot(String url) async {
     var screenshot = await _driver.captureScreenshotAsList();
     var file = File('web/${screenshotPath(url)}');
     await file.create(recursive: true);

@@ -10,14 +10,14 @@ const ansiMagenta = 35;
 
 Future<bool> run(
     String workingDir, String commandName, List<String> args) async {
-  var commandDescription = '`${([commandName]..addAll(args)).join(' ')}`';
+  var commandDescription = '`${([commandName, ...args]).join(' ')}`';
 
   logWrapped(ansiMagenta, '  Running $commandDescription');
 
   var proc = await Process.start(
     commandName,
     args,
-    workingDirectory: Directory.current.path + '/' + workingDir,
+    workingDirectory: '${Directory.current.path}/$workingDir',
     mode: ProcessStartMode.inheritStdio,
   );
 

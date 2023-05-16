@@ -7,10 +7,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class AnimatedPositionedDemo extends StatefulWidget {
-  static String routeName = '/basics/09_animated_positioned';
+  const AnimatedPositionedDemo({super.key});
+  static String routeName = 'misc/animated_positioned';
 
   @override
-  _AnimatedPositionedDemoState createState() => _AnimatedPositionedDemoState();
+  State<AnimatedPositionedDemo> createState() => _AnimatedPositionedDemoState();
 }
 
 class _AnimatedPositionedDemoState extends State<AnimatedPositionedDemo> {
@@ -38,12 +39,12 @@ class _AnimatedPositionedDemoState extends State<AnimatedPositionedDemo> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final appBar = AppBar(title: Text('AnimatedPositioned'));
+    final appBar = AppBar(title: const Text('AnimatedPositioned'));
     final topPadding = MediaQuery.of(context).padding.top;
     // AnimatedPositioned animates changes to a widget's position within a Stack
     return Scaffold(
       appBar: appBar,
-      body: Container(
+      body: SizedBox(
         height: size.height,
         width: size.width,
         child: Stack(
@@ -51,7 +52,7 @@ class _AnimatedPositionedDemoState extends State<AnimatedPositionedDemo> {
             AnimatedPositioned(
               top: topPosition,
               left: leftPosition,
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
               child: InkWell(
                 onTap: () => changePosition(
                     size.height -
@@ -61,6 +62,7 @@ class _AnimatedPositionedDemoState extends State<AnimatedPositionedDemo> {
                   alignment: Alignment.center,
                   width: 150,
                   height: 50,
+                  color: Theme.of(context).primaryColor,
                   child: Text(
                     'Click Me',
                     style: TextStyle(
@@ -68,7 +70,6 @@ class _AnimatedPositionedDemoState extends State<AnimatedPositionedDemo> {
                           Theme.of(context).buttonTheme.colorScheme!.onPrimary,
                     ),
                   ),
-                  color: Theme.of(context).primaryColor,
                 ),
               ),
             ),

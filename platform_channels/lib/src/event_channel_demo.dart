@@ -14,43 +14,35 @@ import 'package:platform_channels/src/accelerometer_event_channel.dart';
 /// [Text] widgets to display the value of [AccelerometerReadings.x],
 /// [AccelerometerReadings.y], and [AccelerometerReadings.z] respectively.
 class EventChannelDemo extends StatelessWidget {
+  const EventChannelDemo({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.headline5;
+    final textStyle = Theme.of(context).textTheme.headlineSmall;
     return Scaffold(
       appBar: AppBar(
-        title: Text('EventChannel Demo'),
+        title: const Text('EventChannel Demo'),
       ),
       body: Center(
         child: StreamBuilder<AccelerometerReadings>(
           stream: Accelerometer.readings,
           builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Text((snapshot.error as PlatformException).message);
-            } else if (snapshot.hasData) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'x axis: ' + snapshot.data.x.toStringAsFixed(3),
-                    style: textStyle,
-                  ),
-                  Text(
-                    'y axis: ' + snapshot.data.y.toStringAsFixed(3),
-                    style: textStyle,
-                  ),
-                  Text(
-                    'z axis: ' + snapshot.data.z.toStringAsFixed(3),
-                    style: textStyle,
-                  )
-                ],
-              );
-            }
-
-            return Text(
-              'No Data Available',
-              style: textStyle,
-            );
+            return switch (snapshot) {
+              AsyncSnapshot(hasError: true) =>
+                Text((snapshot.error as PlatformException).message!),
+              AsyncSnapshot(hasData: true) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('x axis: ${snapshot.data!.x.toStringAsFixed(3)}',
+                        style: textStyle),
+                    Text('y axis: ${snapshot.data!.y.toStringAsFixed(3)}',
+                        style: textStyle),
+                    Text('z axis: ${snapshot.data!.z.toStringAsFixed(3)}',
+                        style: textStyle)
+                  ],
+                ),
+              _ => Text('No Data Available', style: textStyle),
+            };
           },
         ),
       ),

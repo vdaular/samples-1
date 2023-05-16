@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:platform_channels/src/pet_list_message_channel.dart';
 
 /// Demonstrates how to use [BasicMessageChannel] to send a message to platform.
@@ -10,8 +11,10 @@ import 'package:platform_channels/src/pet_list_message_channel.dart';
 /// The widget uses [TextField] and [RadioListTile] to take the [PetDetails.breed] and
 /// [PetDetails.petType] from the user respectively.
 class AddPetDetails extends StatefulWidget {
+  const AddPetDetails({super.key});
+
   @override
-  _AddPetDetailsState createState() => _AddPetDetailsState();
+  State<AddPetDetails> createState() => _AddPetDetailsState();
 }
 
 class _AddPetDetailsState extends State<AddPetDetails> {
@@ -22,10 +25,10 @@ class _AddPetDetailsState extends State<AddPetDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Pet Details'),
-        actions: <Widget>[
+        title: const Text('Add Pet Details'),
+        actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               PetListMessageChannel.addPetDetails(
                 PetDetails(
@@ -34,7 +37,7 @@ class _AddPetDetailsState extends State<AddPetDetails> {
                 ),
               );
 
-              Navigator.pop(context);
+              context.pop();
             },
           )
         ],
@@ -43,19 +46,19 @@ class _AddPetDetailsState extends State<AddPetDetails> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             TextField(
               controller: breedTextController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 filled: true,
                 hintText: 'Breed of pet',
                 labelText: 'Breed',
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             RadioListTile<String>(
@@ -64,7 +67,7 @@ class _AddPetDetailsState extends State<AddPetDetails> {
               groupValue: petType,
               onChanged: (value) {
                 setState(() {
-                  petType = value;
+                  petType = value!;
                 });
               },
             ),
@@ -74,7 +77,7 @@ class _AddPetDetailsState extends State<AddPetDetails> {
               groupValue: petType,
               onChanged: (value) {
                 setState(() {
-                  petType = value;
+                  petType = value!;
                 });
               },
             ),

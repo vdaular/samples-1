@@ -19,7 +19,7 @@ void main() {
       // calls the BinaryMessenger.setMessageHandler registered for the EventChannel
       // and add the incoming message to the StreamController used by the EventChannel
       // after decoding the message with codec used by the EventChannel.
-      void emitValues(ByteData event) {
+      void emitValues(ByteData? event) {
         ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
           'eventChannelDemo',
           event,
@@ -49,7 +49,7 @@ void main() {
 
     testWidgets('EventChannel AccelerometerReadings Stream test',
         (tester) async {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: EventChannelDemo(),
       ));
 
@@ -57,15 +57,15 @@ void main() {
 
       // Check the values of axis. The value is rounded to 3 decimal places.
       expect(
-        find.text('x axis: ' + sensorValues[0].toStringAsFixed(3)),
+        find.text('x axis: ${sensorValues[0].toStringAsFixed(3)}'),
         findsOneWidget,
       );
       expect(
-        find.text('y axis: ' + sensorValues[1].toStringAsFixed(3)),
+        find.text('y axis: ${sensorValues[1].toStringAsFixed(3)}'),
         findsOneWidget,
       );
       expect(
-        find.text('z axis: ' + sensorValues[2].toStringAsFixed(3)),
+        find.text('z axis: ${sensorValues[2].toStringAsFixed(3)}'),
         findsOneWidget,
       );
     });

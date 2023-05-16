@@ -8,16 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void main() {
-  runApp(PlatformView());
+  runApp(const PlatformView());
 }
 
 class PlatformView extends StatelessWidget {
+  const PlatformView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Platform View',
       theme: ThemeData(
         primarySwatch: Colors.grey,
+        useMaterial3: true,
       ),
       home: const HomePage(),
     );
@@ -25,12 +28,10 @@ class PlatformView extends StatelessWidget {
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    Key key,
-  }) : super(key: key);
+  const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -42,14 +43,14 @@ class _HomePageState extends State<HomePage> {
   Future<void> _launchPlatformCount() async {
     final platformCounter =
         await _methodChannel.invokeMethod<int>('switchView', _counter);
-    setState(() => _counter = platformCounter);
+    setState(() => _counter = platformCounter ?? 0);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home page'),
+        title: const Text('Home page'),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,12 +62,12 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     'Button tapped $_counter time${_counter == 1 ? '' : 's'}.',
-                    style: Theme.of(context).textTheme.subtitle2,
+                    style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  SizedBox(height: 18),
+                  const SizedBox(height: 18),
                   ElevatedButton(
-                    child: const Text('Continue in iOS view'),
                     onPressed: _launchPlatformCount,
+                    child: const Text('Continue in iOS view'),
                   ),
                 ],
               ),
@@ -76,10 +77,10 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(bottom: 15, left: 5),
             child: Row(
               children: [
-                FlutterLogo(),
+                const FlutterLogo(),
                 Text(
                   'Flutter',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
             ),

@@ -4,17 +4,19 @@
 
 import 'package:federated_plugin/federated_plugin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomePage(),
+      theme: ThemeData.light(useMaterial3: true),
+      home: const HomePage(),
     );
   }
 }
@@ -22,8 +24,10 @@ class MyApp extends StatelessWidget {
 /// Demonstrates how to use the getBatteryLevel method from federated_plugin to retrieve
 /// current battery level of device.
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -33,20 +37,20 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Federated Plugin Demo'),
+        title: const Text('Federated Plugin Demo'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             batteryLevel == null
-                ? SizedBox.shrink()
+                ? const SizedBox.shrink()
                 : Text(
                     'Battery Level: $batteryLevel',
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-            SizedBox(height: 16),
-            ElevatedButton(
+            const SizedBox(height: 16),
+            FilledButton(
               onPressed: () async {
                 try {
                   final result = await getBatteryLevel();
@@ -58,13 +62,13 @@ class _HomePageState extends State<HomePage> {
                     SnackBar(
                       backgroundColor: Theme.of(context).primaryColor,
                       content: Text(
-                        (error as PlatformException).message as String,
+                        (error as dynamic).message as String,
                       ),
                     ),
                   );
                 }
               },
-              child: Text('Get Battery Level'),
+              child: const Text('Get Battery Level'),
             ),
           ],
         ),

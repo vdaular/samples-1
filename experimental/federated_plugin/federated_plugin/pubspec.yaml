@@ -1,13 +1,11 @@
 name: federated_plugin
 description: A new flutter plugin project to demonstrate how to implement federated plugin.
 version: 0.0.1
-homepage:
 
-publish_to: 'none'
+publish_to: "none"
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: ^3.0.0
 
 dependencies:
   flutter:
@@ -22,16 +20,17 @@ dependencies:
     path: ../federated_plugin_macos
 
 dev_dependencies:
+  analysis_defaults:
+    path: ../../../analysis_defaults
   flutter_test:
     sdk: flutter
-  pedantic: ^1.11.0
 
 flutter:
   plugin:
     platforms:
       android:
-        pluginClass: FederatedPlugin
         package: dev.flutter.federated_plugin
+        pluginClass: FederatedPlugin
       ios:
         pluginClass: SwiftFederatedPlugin
       web:
