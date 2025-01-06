@@ -42,9 +42,9 @@ a moderately recent version of Angular:
 ```console
 $ ng version
 
-Angular CLI: 16.0.1
-Node: 18.16.0
-Package Manager: npm 9.5.1
+Angular CLI: 17.0.0
+Node: 20.9.0
+Package Manager: npm 10.1.0
 OS: linux x64
 ```
 
@@ -53,10 +53,10 @@ And Flutter:
 ```
 $ flutter --version
 
-Flutter 3.10.0-12.0.pre.38 • channel master
-Framework • revision 1a51dc2131 (8 days ago) • 2023-04-24 12:25:21 -0700
-Engine • revision 5fbde6c0fc
-Tools • Dart 3.1.0 (build 3.1.0-35.0.dev) • DevTools 2.23.1
+Flutter 3.13.9 • channel stable
+Framework • revision d211f42860 (2 weeks ago) • 2023-10-25 13:42:25 -0700
+Engine • revision 0545f8705d
+Tools • Dart 3.1.5 • DevTools 2.25.0
 ```
 
 **Ensure `npm`, `ng` and `flutter` are present in your `$PATH`.**
@@ -70,8 +70,6 @@ In order to build this app, first fetch its `npm` dependencies:
 
 ```console
 $ npm install
-
-npm WARN deprecated @npmcli/move-file@2.0.1: This functionality has been moved to @npmcli/fs
 
 added 963 packages, and audited 964 packages in 17s
 
@@ -128,7 +126,8 @@ vendor.js             | vendor        |   4.38 MB |
 ✔ Compiled successfully.
 ```
 
-Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of its Angular source files.
+Navigate to `http://localhost:4200/`. The application will automatically reload
+if you change any of its Angular source files.
 
 ### Local Flutter web development
 

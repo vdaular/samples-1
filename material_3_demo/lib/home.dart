@@ -108,29 +108,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Widget createScreenFor(
-      ScreenSelected screenSelected, bool showNavBarExample) {
-    switch (screenSelected) {
-      case ScreenSelected.component:
-        return Expanded(
-          child: OneTwoTransition(
-            animation: railAnimation,
-            one: FirstComponentList(
-                showNavBottomBar: showNavBarExample,
+    ScreenSelected screenSelected,
+    bool showNavBarExample,
+  ) =>
+      switch (screenSelected) {
+        ScreenSelected.component => Expanded(
+            child: OneTwoTransition(
+              animation: railAnimation,
+              one: FirstComponentList(
+                  showNavBottomBar: showNavBarExample,
+                  scaffoldKey: scaffoldKey,
+                  showSecondList: showMediumSizeLayout || showLargeSizeLayout),
+              two: SecondComponentList(
                 scaffoldKey: scaffoldKey,
-                showSecondList: showMediumSizeLayout || showLargeSizeLayout),
-            two: SecondComponentList(
-              scaffoldKey: scaffoldKey,
+              ),
             ),
           ),
-        );
-      case ScreenSelected.color:
-        return const ColorPalettesScreen();
-      case ScreenSelected.typography:
-        return const TypographyScreen();
-      case ScreenSelected.elevation:
-        return const ElevationScreen();
-    }
-  }
+        ScreenSelected.color => const ColorPalettesScreen(),
+        ScreenSelected.typography => const TypographyScreen(),
+        ScreenSelected.elevation => const ElevationScreen()
+      };
 
   PreferredSizeWidget createAppBar() {
     return AppBar(
@@ -314,9 +311,8 @@ class _ColorSeedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      icon: Icon(
+      icon: const Icon(
         Icons.palette_outlined,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       tooltip: 'Select a seed color',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -368,16 +364,14 @@ class _ColorImageButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
-      icon: Icon(
+      icon: const Icon(
         Icons.image_outlined,
-        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       tooltip: 'Select a color extraction image',
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       itemBuilder: (context) {
         return List.generate(ColorImageProvider.values.length, (index) {
-          ColorImageProvider currentImageProvider =
-              ColorImageProvider.values[index];
+          final currentImageProvider = ColorImageProvider.values[index];
 
           return PopupMenuItem(
             value: index,
@@ -395,8 +389,7 @@ class _ColorImageButton extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
                         child: Image(
-                          image: NetworkImage(
-                              ColorImageProvider.values[index].url),
+                          image: NetworkImage(currentImageProvider.url),
                         ),
                       ),
                     ),

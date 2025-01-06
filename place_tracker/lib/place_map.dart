@@ -134,14 +134,16 @@ class _PlaceMapState extends State<PlaceMap> {
   }
 
   Future<void> onMapCreated(GoogleMapController controller) async {
+    if (!context.mounted) return;
+    final appState = Provider.of<AppState>(context, listen: false);
     mapController.complete(controller);
     _lastMapPosition = widget.center;
 
     // Draw initial place markers on creation so that we have something
     // interesting to look at.
     var markers = <Marker>{};
-    for (var place in Provider.of<AppState>(context, listen: false).places) {
-      markers.add(await _createPlaceMarker(context, place));
+    for (var place in appState.places) {
+      markers.add(await _createPlaceMarker(place, appState.selectedCategory));
     }
     setState(() {
       _markers.addAll(markers);
@@ -180,6 +182,7 @@ class _PlaceMapState extends State<PlaceMap> {
   }
 
   Future<void> _confirmAddPlace(BuildContext context) async {
+    if (!context.mounted) return;
     if (_pendingMarker != null) {
       // Create a new Place and map it to the marker we just added.
       final appState = Provider.of<AppState>(context, listen: false);
@@ -192,8 +195,7 @@ class _PlaceMapState extends State<PlaceMap> {
 
       final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-      var placeMarker =
-          await _getPlaceMarkerIcon(context, appState.selectedCategory);
+      var placeMarker = await _getPlaceMarkerIcon(appState.selectedCategory);
 
       setState(() {
         final updatedMarker = _pendingMarker!.copyWith(
@@ -237,7 +239,10 @@ class _PlaceMapState extends State<PlaceMap> {
     }
   }
 
-  Future<Marker> _createPlaceMarker(BuildContext context, Place place) async {
+  Future<Marker> _createPlaceMarker(
+    Place place,
+    PlaceCategory selectedCategory,
+  ) async {
     final marker = Marker(
       markerId: MarkerId(place.latLng.toString()),
       position: place.latLng,
@@ -246,9 +251,8 @@ class _PlaceMapState extends State<PlaceMap> {
         snippet: '${place.starRating} Star Rating',
         onTap: () => context.go('/place/${place.id}'),
       ),
-      icon: await _getPlaceMarkerIcon(context, place.category),
-      visible: place.category ==
-          Provider.of<AppState>(context, listen: false).selectedCategory,
+      icon: await _getPlaceMarkerIcon(place.category),
+      visible: place.category == selectedCategory,
     );
     _markedPlaces[marker] = place;
     return marker;
@@ -400,13 +404,12 @@ class _PlaceMapState extends State<PlaceMap> {
     });
   }
 
-  static Future<BitmapDescriptor> _getPlaceMarkerIcon(
-          BuildContext context, PlaceCategory category) =>
+  Future<BitmapDescriptor> _getPlaceMarkerIcon(PlaceCategory category) =>
       switch (category) {
-        PlaceCategory.favorite => BitmapDescriptor.fromAssetImage(
+        PlaceCategory.favorite => BitmapDescriptor.asset(
             createLocalImageConfiguration(context, size: const Size.square(32)),
             'assets/heart.png'),
-        PlaceCategory.visited => BitmapDescriptor.fromAssetImage(
+        PlaceCategory.visited => BitmapDescriptor.asset(
             createLocalImageConfiguration(context, size: const Size.square(32)),
             'assets/visited.png'),
         PlaceCategory.wantToGo => Future.value(BitmapDescriptor.defaultMarker),
@@ -437,26 +440,30 @@ class _AddPlaceButtonBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 14.0),
         alignment: Alignment.bottomCenter,
-        child: ButtonBar(
-          alignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: onSavePressed,
-              child: const Text(
-                'Save',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: OverflowBar(
+            alignment: MainAxisAlignment.center,
+            spacing: 8.0,
+            children: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: onSavePressed,
+                child: const Text('Save'),
               ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(foregroundColor: Colors.red),
-              onPressed: onCancelPressed,
-              child: const Text(
-                'Cancel',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: onCancelPressed,
+                child: const Text('Cancel'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -481,46 +488,50 @@ class _CategoryButtonBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 14.0),
         alignment: Alignment.bottomCenter,
-        child: ButtonBar(
-          alignment: MainAxisAlignment.center,
-          children: [
-            FilledButton(
-              style: FilledButton.styleFrom(
-                  backgroundColor:
-                      selectedPlaceCategory == PlaceCategory.favorite
-                          ? Colors.green[700]
-                          : Colors.lightGreen),
-              child: const Text(
-                'Favorites',
-                style: TextStyle(color: Colors.white, fontSize: 14.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: OverflowBar(
+            alignment: MainAxisAlignment.center,
+            spacing: 8.0,
+            children: <Widget>[
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor:
+                        selectedPlaceCategory == PlaceCategory.favorite
+                            ? Colors.green[700]
+                            : Colors.lightGreen),
+                onPressed: () => onChanged(PlaceCategory.favorite),
+                child: const Text(
+                  'Favorites',
+                  style: TextStyle(color: Colors.white, fontSize: 14.0),
+                ),
               ),
-              onPressed: () => onChanged(PlaceCategory.favorite),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                  backgroundColor:
-                      selectedPlaceCategory == PlaceCategory.visited
-                          ? Colors.green[700]
-                          : Colors.lightGreen),
-              child: const Text(
-                'Visited',
-                style: TextStyle(color: Colors.white, fontSize: 14.0),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor:
+                        selectedPlaceCategory == PlaceCategory.visited
+                            ? Colors.green[700]
+                            : Colors.lightGreen),
+                onPressed: () => onChanged(PlaceCategory.visited),
+                child: const Text(
+                  'Visited',
+                  style: TextStyle(color: Colors.white, fontSize: 14.0),
+                ),
               ),
-              onPressed: () => onChanged(PlaceCategory.visited),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                  backgroundColor:
-                      selectedPlaceCategory == PlaceCategory.wantToGo
-                          ? Colors.green[700]
-                          : Colors.lightGreen),
-              child: const Text(
-                'Want To Go',
-                style: TextStyle(color: Colors.white, fontSize: 14.0),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor:
+                        selectedPlaceCategory == PlaceCategory.wantToGo
+                            ? Colors.green[700]
+                            : Colors.lightGreen),
+                onPressed: () => onChanged(PlaceCategory.wantToGo),
+                child: const Text(
+                  'Want To Go',
+                  style: TextStyle(color: Colors.white, fontSize: 14.0),
+                ),
               ),
-              onPressed: () => onChanged(PlaceCategory.wantToGo),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

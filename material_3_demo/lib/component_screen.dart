@@ -242,6 +242,7 @@ class Containment extends StatelessWidget {
     return const ComponentGroupDecoration(label: 'Containment', children: [
       BottomSheetSection(),
       Cards(),
+      Carousels(),
       Dialogs(),
       Dividers(),
       // TODO: Add Lists, https://github.com/flutter/flutter/issues/114006
@@ -280,12 +281,12 @@ class Selection extends StatelessWidget {
     return const ComponentGroupDecoration(label: 'Selection', children: [
       Checkboxes(),
       Chips(),
-      DatePickers(),
+      DatePicker(),
+      TimePicker(),
       Menus(),
       Radios(),
       Sliders(),
       Switches(),
-      TimePickers(),
     ]);
   }
 }
@@ -501,7 +502,7 @@ class Cards extends StatelessWidget {
           SizedBox(
             width: cardWidth,
             child: Card(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               elevation: 0,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(10, 5, 5, 10),
@@ -733,11 +734,11 @@ class _DialogsState extends State<Dialogs> {
             'A dialog is a type of modal window that appears in front of app content to provide critical information, or prompt for a decision to be made.'),
         actions: <Widget>[
           TextButton(
-            child: const Text('Okay'),
+            child: const Text('Dismiss'),
             onPressed: () => Navigator.of(context).pop(),
           ),
           FilledButton(
-            child: const Text('Dismiss'),
+            child: const Text('Okay'),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -849,9 +850,9 @@ class _SwitchRowState extends State<SwitchRow> {
   bool value0 = false;
   bool value1 = true;
 
-  final MaterialStateProperty<Icon?> thumbIcon =
-      MaterialStateProperty.resolveWith<Icon?>((states) {
-    if (states.contains(MaterialState.selected)) {
+  final WidgetStateProperty<Icon?> thumbIcon =
+      WidgetStateProperty.resolveWith<Icon?>((states) {
+    if (states.contains(WidgetState.selected)) {
       return const Icon(Icons.check);
     }
     return const Icon(Icons.close);
@@ -1400,14 +1401,14 @@ class _ChipsState extends State<Chips> {
   }
 }
 
-class DatePickers extends StatefulWidget {
-  const DatePickers({super.key});
+class DatePicker extends StatefulWidget {
+  const DatePicker({super.key});
 
   @override
-  State<DatePickers> createState() => _DatePickersState();
+  State<DatePicker> createState() => _DatePickerState();
 }
 
-class _DatePickersState extends State<DatePickers> {
+class _DatePickerState extends State<DatePicker> {
   DateTime? selectedDate;
   final DateTime _firstDate = DateTime(DateTime.now().year - 2);
   final DateTime _lastDate = DateTime(DateTime.now().year + 1);
@@ -1417,7 +1418,7 @@ class _DatePickersState extends State<DatePickers> {
     return ComponentDecoration(
       label: 'Date picker',
       tooltipMessage: 'Use showDatePicker',
-      child: TextButton(
+      child: TextButton.icon(
         onPressed: () async {
           DateTime? date = await showDatePicker(
             context: context,
@@ -1435,7 +1436,8 @@ class _DatePickersState extends State<DatePickers> {
             }
           });
         },
-        child: const Text(
+        icon: const Icon(Icons.calendar_month),
+        label: const Text(
           'Show date picker',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -1444,14 +1446,14 @@ class _DatePickersState extends State<DatePickers> {
   }
 }
 
-class TimePickers extends StatefulWidget {
-  const TimePickers({super.key});
+class TimePicker extends StatefulWidget {
+  const TimePicker({super.key});
 
   @override
-  State<TimePickers> createState() => _TimePickersState();
+  State<TimePicker> createState() => _TimePickerState();
 }
 
-class _TimePickersState extends State<TimePickers> {
+class _TimePickerState extends State<TimePicker> {
   TimeOfDay? selectedTime;
 
   @override
@@ -1459,7 +1461,7 @@ class _TimePickersState extends State<TimePickers> {
     return ComponentDecoration(
       label: 'Time picker',
       tooltipMessage: 'Use showTimePicker',
-      child: TextButton(
+      child: TextButton.icon(
         onPressed: () async {
           final TimeOfDay? time = await showTimePicker(
             context: context,
@@ -1475,12 +1477,16 @@ class _TimePickersState extends State<TimePickers> {
           );
           setState(() {
             selectedTime = time;
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Selected time: ${selectedTime!.format(context)}'),
-            ));
+            if (selectedTime != null) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content:
+                    Text('Selected time: ${selectedTime!.format(context)}'),
+              ));
+            }
           });
         },
-        child: const Text(
+        icon: const Icon(Icons.schedule),
+        label: const Text(
           'Show time picker',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -1632,7 +1638,7 @@ class BottomSheetSection extends StatefulWidget {
 
 class _BottomSheetSectionState extends State<BottomSheetSection> {
   bool isNonModalBottomSheetOpen = false;
-  PersistentBottomSheetController<void>? _nonModalBottomSheetController;
+  PersistentBottomSheetController? _nonModalBottomSheetController;
 
   @override
   Widget build(BuildContext context) {
@@ -1719,7 +1725,7 @@ class _BottomSheetSectionState extends State<BottomSheetSection> {
                 });
               }
 
-              _nonModalBottomSheetController = showBottomSheet<void>(
+              _nonModalBottomSheetController = showBottomSheet(
                 elevation: 8.0,
                 context: context,
                 // TODO: Remove when this is in the framework https://github.com/flutter/flutter/issues/118619
@@ -2236,7 +2242,7 @@ class _MenusState extends State<Menus> {
               ),
               Icon(
                 selectedIcon?.icon,
-                color: selectedColor?.color ?? Colors.grey.withOpacity(0.5),
+                color: selectedColor?.color ?? Colors.grey.withAlpha(128),
               )
             ],
           ),
@@ -2411,6 +2417,65 @@ class _SearchAnchorsState extends State<SearchAnchors> {
   }
 }
 
+class Carousels extends StatelessWidget {
+  const Carousels({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ComponentDecoration(
+      label: 'Carousel',
+      tooltipMessage: 'Use CarouselView',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text('Uncontained Carousel'),
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints.tightFor(height: 150),
+            child: CarouselView(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: Theme.of(context).colorScheme.outline),
+              ),
+              shrinkExtent: 100,
+              itemExtent: 180,
+              children: List<Widget>.generate(20, (index) {
+                return Center(
+                  child: Text('Item $index'),
+                );
+              }),
+            ),
+          ),
+          colDivider,
+          const Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text('Uncontained Carousel with snapping effect'),
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints.tightFor(height: 150),
+            child: CarouselView(
+              itemSnapping: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: Theme.of(context).colorScheme.outline),
+              ),
+              shrinkExtent: 100,
+              itemExtent: 180,
+              children: List<Widget>.generate(20, (index) {
+                return Center(
+                  child: Text('Item $index'),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class ComponentDecoration extends StatefulWidget {
   const ComponentDecoration({
     super.key,
@@ -2441,7 +2506,7 @@ class _ComponentDecorationState extends State<ComponentDecoration> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(widget.label,
-                    style: Theme.of(context).textTheme.titleSmall),
+                    style: Theme.of(context).textTheme.titleMedium),
                 Tooltip(
                   message: widget.tooltipMessage,
                   child: const Padding(
@@ -2503,7 +2568,8 @@ class ComponentGroupDecoration extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.zero,
         elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color:
+            Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(77),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20.0),
           child: Center(

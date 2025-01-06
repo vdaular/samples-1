@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show Platform;
 import 'package:http/http.dart' as http;
 import 'package:shared/shared.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorSchemeSeed: Colors.blue,
-        useMaterial3: true,
       ),
       home: MyHomePage(
         title: 'Flutter Demo Home Page',

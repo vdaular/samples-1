@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -78,10 +78,10 @@ class WonkyCharState extends State<WonkyChar>
 
   @override
   Widget build(BuildContext context) {
-    List<FontVariation> fontVariations = [];
+    List<ui.FontVariation> fontVariations = [];
     for (int i = 0; i < _fvAxes.length; i++) {
       fontVariations
-          .add(FontVariation(_fvAxes[i], _fvAnimations[i].value as double));
+          .add(ui.FontVariation(_fvAxes[i], _fvAnimations[i].value as double));
     }
     return Transform(
       alignment: Alignment.center,
@@ -158,7 +158,6 @@ class WonkyCharState extends State<WonkyChar>
                     '**ERROR** unrecognized property to animate: ${s.property}');
               }
             }
-            break;
         }
       }
       // save refs to all curves just to persist in mem, don't need to touch them again

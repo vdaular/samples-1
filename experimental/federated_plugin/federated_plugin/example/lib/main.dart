@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(useMaterial3: true),
+      theme: ThemeData.light(),
       home: const HomePage(),
     );
   }
@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
                     batteryLevel = result;
                   });
                 } catch (error) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       backgroundColor: Theme.of(context).primaryColor,

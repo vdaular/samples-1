@@ -1,88 +1,73 @@
 samples:
-  - name: Gallery
+  - name: Material 3
     author: Flutter
     screenshots:
-      - url: images/gallery1.png
-        alt: Gallery app screenshot
-      - url: images/gallery2.png
-        alt: Rally app screenshot
-      - url: images/gallery3.png
-        alt: Fortnightly app screenshot
-      - url: images/gallery4.png
-        alt: Crane app screenshot
-      - url: images/gallery5.png
-        alt: Shrine app screenshot
-    source: https://github.com/flutter/gallery
-    web: https://gallery.flutter.dev
+      - url: images/material_3_components.png
+        alt: Components tab of the Material 3 demo
+      - url: images/material_3_color.png
+        alt: Colors tab of the Material 3 demo
+      - url: images/material_3_typography.png
+        alt: Typography tab of the Material 3 demo
+      - url: images/material_3_elevation.png
+        alt: Elevation tab of the Material 3 demo
+      - url: images/material_3_green.png
+        alt: Elevation tab of the Material 3 demo with seed color of green
+    source: https://github.com/flutter/samples/tree/main/material_3_demo
     description: >
-      A collection of Material Design & Cupertino widgets, behaviors,
-      and vignettes implemented with Flutter.
-    difficulty: intermediate
+      Showcases Material 3 features in the Flutter Material library.
+      These features include updated components, typography, color system and elevation support.
+    difficulty: beginner
     widgets:
-      - AlertDialog
-      - AppBar
-      - BottomAppBar
-      - BottomNavigationBar
-      - BottomSheet
+      - Theme
+      - TextButton
+      - ElevatedButton
+      - OutlinedButton
+      - Text
       - Card
-      - Checkbox
-      - ChoiceChip
-      - CircularProgressIndicator
-      - Container
-      - CupertinoActivityIndicator
-      - CupertinoAlertDialog
-      - CupertinoButton
-      - CupertinoButton
-      - CupertinoDatePicker
-      - CupertinoDialogAction
-      - CupertinoNavigationBar
-      - CupertinoPageScaffold
-      - CupertinoSegmentedControl
-      - CupertinoSlider
-      - CupertinoSlidingSegmentedControl
-      - CupertinoSliverRefreshControl
-      - CupertinoSwitch
-      - CupertinoTabView
-      - CupertinoTextField
-      - CupertinoTheme
-      - DayPicker
-      - FilterChip
-      - FlatButton
-      - FloatingActionButton
-      - GridTile
-      - GridView
-      - Icon
-      - InputChip
-      - LayoutBuilder
-      - LinearProgressIndicator
-      - ListTile
-      - ListView
-      - MaterialBanner
-      - MonthPicker
-      - PaginatedDataTable
-      - PopupMenuButton
-      - PopupMenuItem
-      - Radio
-      - RaisedButton
-      - RangeSlider
-      - Scaffold
-      - SimpleDialog
-      - Slider
-      - SnackBar
-      - Switch
-      - TabBar
-      - TabBarView
-      - TextField
-      - TextFormField
-      - Tooltip
-      - YearPicker
-    packages:
-      - flutter/material
-      - flutter/cupertino
-      - google_fonts
-      - scoped_model
-    tags: ['intermediate', 'sample', 'gallery', 'material', 'design', 'vignettes']
-    platforms: ['web', 'ios', 'android']
+      - AppBar
+    packages: [ ]
+    tags: [ "material", "design", "gallery" ]
+    platforms: [ "ios", "android", "web", "windows", "macos", "linux" ]
+    type: demo
+    web: web/material_3_demo
+
+  - name: Rich Text Editor
+    author: Flutter
+    screenshots:
+      - url: images/simple_editor_active.png
+        alt: Advanced text editing with activity
+      - url: images/simple_editor_initial.png
+        alt: Advanced text editing in initial state
+    source: https://github.com/flutter/samples/tree/main/simplistic_editor
+    description: >
+      This is a fancy text editor sample which shows how to consume fine-grain
+      text editing and selection details from the framework's TextEditingDeltas
+      APIs.
+    difficulty: advanced
+    widgets:
+      - TextInput
+    packages: []
+    tags: ["demo", "text"]
+    platforms: ["ios", "android", "web", "windows", "macos", "linux"]
+    type: demo
+    web: web/simplistic_editor
+
+  - name: Web Embedding
+    author: Flutter and Angular
+    screenshots:
+      - url: images/web_embedding1.png
+        alt: A Flutter app embedded in an Angular app
+      - url: images/web_embedding2.png
+        alt: A Flutter app embedded in an Angular app
+    source: https://github.com/flutter/samples/tree/main/web_embedding
+    description: >
+      An example app showing how to embed Flutter in a web application using Angular
+    difficulty: advanced
+    widgets: []
+    packages: []
+    platforms: ['web']
+    tags: ['demo', 'web', 'add-to-app', 'embedding']
+    web: https://flutter-angular.web.app/
     type: demo
 
   - name: Add to App
@@ -197,34 +182,6 @@ samples:
       - dart:isolate
       - dart:math
     tags: ['intermediate', 'sample', 'isolates', 'concurrency']
-    platforms: ['ios', 'android']
-    type: sample
-
-  - name: jsonexample
-    author: Flutter
-    screenshots:
-      - url: images/jsonexample1.png
-        alt: JSON example screenshot
-      - url: images/jsonexample2.png
-        alt: JSON example screenshot
-      - url: images/jsonexample3.png
-        alt: JSON example screenshot
-    source: https://github.com/flutter/samples/tree/main/jsonexample
-    description: >
-      A Flutter sample app that deserializes a set of JSON strings using three
-      different libraries: dart:convert, json_serializable, and built_value.
-    difficulty: beginner
-    widgets:
-      - Table
-      - TableRow
-    packages:
-      - json_serializable
-      - built_value
-      - built_collection
-      - json_annotation
-      - build_runner
-      - built_value_generator
-    tags: ['beginner', 'sample']
     platforms: ['ios', 'android']
     type: sample
 
@@ -508,63 +465,6 @@ samples:
     tags: ['demo', 'game']
     type: demo
 
-###################
-#### Web Demos ####
-###################
-
-  - name: Rich Text Editor
-    author: Flutter
-    screenshots:
-      - url: images/simple_editor_active.png
-        alt: Advanced text editing with activity
-      - url: images/simple_editor_initial.png
-        alt: Advanced text editing in initial state
-    source: https://github.com/flutter/samples/tree/main/simplistic_editor
-    description: >
-      This is a fancy text editor sample which shows how to consume fine-grain
-      text editing and selection details from the framework's TextEditingDeltas
-      APIs.
-    difficulty: advanced
-    widgets:
-      - TextInput
-    packages: []
-    tags: ["demo", "text"]
-    platforms: ["ios", "android", "web", "windows", "macos", "linux"]
-    type: demo
-    web: web/simplistic_editor
-
-  - name: Material 3
-    author: Flutter
-    screenshots:
-      - url: images/material_3_components.png
-        alt: Components tab of the Material 3 demo
-      - url: images/material_3_color.png
-        alt: Colors tab of the Material 3 demo
-      - url: images/material_3_typography.png
-        alt: Typography tab of the Material 3 demo
-      - url: images/material_3_elevation.png
-        alt: Elevation tab of the Material 3 demo
-      - url: images/material_3_green.png
-        alt: Elevation tab of the Material 3 demo with seed color of green
-    source: https://github.com/flutter/samples/tree/main/material_3_demo
-    description: >
-      Showcases Material 3 features in the Flutter Material library.
-      These features include updated components, typography, color system and elevation support.
-    difficulty: beginner
-    widgets:
-      - Theme
-      - TextButton
-      - ElevatedButton
-      - OutlinedButton
-      - Text
-      - Card
-      - AppBar
-    packages: []
-    tags: ["material", "design"]
-    platforms: ["ios", "android", "web", "windows", "macos", "linux"]
-    type: demo
-    web: web/material_3_demo
-  
   - name: Game Template
     author: Flutter
     screenshots:
@@ -611,36 +511,3 @@ samples:
     tags: ['demo', 'animation']
     web: https://z.flutter.gallery/#/dice
     type: demo
-
-  - name: Web Embedding
-    author: Flutter and Angular
-    screenshots:
-      - url: images/web_embedding1.png
-        alt: A Flutter app embedded in an Angular app
-      - url: images/web_embedding2.png
-        alt: A Flutter app embedded in an Angular app
-    source: https://github.com/flutter/samples/tree/main/web_embedding
-    description: >
-      An example app showing how to embed Flutter in a web application using Angular
-    difficulty: advanced
-    widgets: []
-    packages: []
-    platforms: ['web']
-    tags: ['demo', 'web', 'add-to-app', 'embedding']
-    web: https://flutter-angular.web.app/
-    type: demo
-
-  - name: Next Gen UI demo
-    author: Flutter
-    screenshots:
-      - url: images/next_gen_ui_demo.png
-        alt: Next Gen UI demo screenshot
-    source: https://github.com/flutter/samples/tree/main/next_gen_ui_demo
-    description: A sample version of the Next Generation UI codelab for demoing at I/O Connect
-    difficulty: advanced
-    packages: 
-      - flutter_animate
-    platforms:
-      - Windows, macOS, Linux, web, Android, iOS
-    type: sample
-    web: web/next_gen_ui_demo

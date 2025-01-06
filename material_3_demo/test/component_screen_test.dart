@@ -10,7 +10,7 @@ import 'package:material_3_demo/main.dart';
 
 void main() {
   testWidgets('Default main page shows all M3 components', (tester) async {
-    widgetSetup(tester, 800, windowHeight: 7000);
+    widgetSetup(tester, 800, windowHeight: 7500);
     await tester.pumpWidget(const App());
 
     // Elements on the app bar
@@ -67,6 +67,9 @@ void main() {
     expect(find.widgetWithText(Cards, 'Filled'), findsOneWidget);
     expect(find.widgetWithText(Cards, 'Outlined'), findsOneWidget);
 
+    // Carousels
+    expect(find.byType(CarouselView), findsNWidgets(2));
+
     // Dialogs
     expect(find.widgetWithText(TextButton, 'Show dialog'), findsOneWidget);
     expect(find.widgetWithText(TextButton, 'Show full-screen dialog'),
@@ -110,8 +113,9 @@ void main() {
     expect(find.byType(FilterChip), findsNWidgets(2));
     expect(find.byType(InputChip), findsNWidgets(2));
 
-    // Date pickers
-    expect(find.widgetWithText(TextButton, 'Show date picker'), findsOneWidget);
+    // Date and time pickers
+    expect(find.widgetWithText(DatePicker, 'Show date picker'), findsOneWidget);
+    expect(find.widgetWithText(TimePicker, 'Show time picker'), findsOneWidget);
 
     // Menus
     expect(find.byType(MenuAnchor), findsNWidgets(5));
@@ -127,9 +131,6 @@ void main() {
 
     // Switches
     expect(find.byType(Switch), findsNWidgets(4));
-
-    // Time pickers
-    expect(find.widgetWithText(TextButton, 'Show time picker'), findsOneWidget);
 
     // TextFields
     expect(find.widgetWithText(TextField, 'Disabled'), findsNWidgets(2));
@@ -185,7 +186,7 @@ void main() {
   });
 
   testWidgets(
-      'Material version switches between Material3 and Material2 when'
+      'Material version switches between Material3 and Material2 when '
       'the version icon is clicked', (tester) async {
     widgetSetup(tester, 450, windowHeight: 7000);
     await tester.pumpWidget(const App());
@@ -322,7 +323,7 @@ void main() {
 
   testWidgets('Color theme changes when a color is selected from menu',
       (tester) async {
-    Color m3BaseColor = const Color(0xff6750a4);
+    Color m3BaseColor = const Color(0xff65558f);
     await tester.pumpWidget(Container());
     await tester.pumpWidget(const App());
     await tester.pump();

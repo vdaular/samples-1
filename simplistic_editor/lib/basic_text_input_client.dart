@@ -24,6 +24,10 @@ typedef BasicTextFieldContextMenuBuilder = Widget Function(
   VoidCallback? onCut,
   VoidCallback? onPaste,
   VoidCallback? onSelectAll,
+  VoidCallback? onLookUp,
+  VoidCallback? onLiveTextInput,
+  VoidCallback? onSearchWeb,
+  VoidCallback? onShare,
   TextSelectionToolbarAnchors anchors,
 );
 
@@ -65,6 +69,7 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
   void initState() {
     super.initState();
     _clipboardStatus?.addListener(_onChangedClipboardStatus);
+    _liveTextInputStatus?.addListener(_onChangedLiveTextInputStatus);
     widget.focusNode.addListener(_handleFocusChanged);
     widget.controller.addListener(_didChangeTextEditingValue);
   }
@@ -78,6 +83,9 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
   @override
   void dispose() {
     widget.controller.removeListener(_didChangeTextEditingValue);
+    widget.focusNode.removeListener(_handleFocusChanged);
+    _liveTextInputStatus?.removeListener(_onChangedLiveTextInputStatus);
+    _liveTextInputStatus?.dispose();
     _clipboardStatus?.removeListener(_onChangedClipboardStatus);
     _clipboardStatus?.dispose();
     super.dispose();
@@ -157,6 +165,7 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
       return false;
     }
 
+    _liveTextInputStatus?.update();
     _selectionOverlay!.showToolbar();
 
     return true;
@@ -319,6 +328,36 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
     });
   }
 
+  // These actions have yet to be implemented for this sample.
+  static final Map<Type, Action<Intent>> _unsupportedActions =
+      <Type, Action<Intent>>{
+    DeleteToNextWordBoundaryIntent: DoNothingAction(consumesKey: false),
+    DeleteToLineBreakIntent: DoNothingAction(consumesKey: false),
+    ExtendSelectionToNextWordBoundaryIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionToNextParagraphBoundaryOrCaretLocationIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionToLineBreakIntent: DoNothingAction(consumesKey: false),
+    ExtendSelectionVerticallyToAdjacentLineIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionVerticallyToAdjacentPageIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionToNextParagraphBoundaryIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionToDocumentBoundaryIntent:
+        DoNothingAction(consumesKey: false),
+    ExtendSelectionByPageIntent: DoNothingAction(consumesKey: false),
+    ExpandSelectionToDocumentBoundaryIntent:
+        DoNothingAction(consumesKey: false),
+    ExpandSelectionToLineBreakIntent: DoNothingAction(consumesKey: false),
+    ScrollToDocumentBoundaryIntent: DoNothingAction(consumesKey: false),
+    RedoTextIntent: DoNothingAction(consumesKey: false),
+    ReplaceTextIntent: DoNothingAction(consumesKey: false),
+    UndoTextIntent: DoNothingAction(consumesKey: false),
+    UpdateSelectionIntent: DoNothingAction(consumesKey: false),
+    TransposeCharactersIntent: DoNothingAction(consumesKey: false),
+  };
+
   /// Keyboard text editing actions.
   // The Handling of the default text editing shortcuts with deltas
   // needs to be in the framework somehow. This should go through some kind of
@@ -348,6 +387,7 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
     DoNothingAndStopPropagationTextIntent: DoNothingAction(
       consumesKey: false,
     ),
+    ..._unsupportedActions,
   };
 
   void _delete(bool forward) {
@@ -553,7 +593,7 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
   @override
   bool get pasteEnabled =>
       _clipboardStatus == null ||
-      _clipboardStatus!.value == ClipboardStatus.pasteable;
+      _clipboardStatus.value == ClipboardStatus.pasteable;
 
   @override
   bool get selectAllEnabled => textEditingValue.text.isNotEmpty;
@@ -740,7 +780,8 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
     // We return early if the selection is not valid. This can happen when the
     // text of the editable is updated at the same time as the selection is
     // changed by a gesture event.
-    if (!widget.controller.isSelectionWithinTextBounds(selection)) return;
+    final textLength = _value.text.length;
+    if (selection.start > textLength || selection.end > textLength) return;
 
     widget.controller.selection = selection;
 
@@ -822,6 +863,19 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
                     : null,
                 selectAllEnabled
                     ? () => selectAll(SelectionChangedCause.toolbar)
+                    : null,
+                lookUpEnabled
+                    ? () => _lookUpSelection(SelectionChangedCause.toolbar)
+                    : null,
+                liveTextInputEnabled
+                    ? () => _startLiveTextInput(SelectionChangedCause.toolbar)
+                    : null,
+                searchWebEnabled
+                    ? () =>
+                        _searchWebForSelection(SelectionChangedCause.toolbar)
+                    : null,
+                shareEnabled
+                    ? () => _shareSelection(SelectionChangedCause.toolbar)
                     : null,
                 _contextMenuAnchors,
               );
@@ -919,6 +973,118 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
     );
   }
 
+  /// For OCR Support.
+  /// Detects whether the Live Text input is enabled.
+  final LiveTextInputStatusNotifier? _liveTextInputStatus =
+      kIsWeb ? null : LiveTextInputStatusNotifier();
+
+  @override
+  bool get liveTextInputEnabled {
+    return _liveTextInputStatus?.value == LiveTextInputStatus.enabled &&
+        textEditingValue.selection.isCollapsed;
+  }
+
+  void _onChangedLiveTextInputStatus() {
+    setState(() {
+      // Inform the widget that the value of liveTextInputStatus has changed.
+    });
+  }
+
+  void _startLiveTextInput(SelectionChangedCause cause) {
+    if (!liveTextInputEnabled) {
+      return;
+    }
+    if (_hasInputConnection) {
+      LiveText.startLiveTextInput();
+    }
+    if (cause == SelectionChangedCause.toolbar) {
+      hideToolbar();
+    }
+  }
+
+  /// For lookup support.
+  @override
+  bool get lookUpEnabled {
+    if (defaultTargetPlatform != TargetPlatform.iOS) {
+      return false;
+    }
+    return !textEditingValue.selection.isCollapsed;
+  }
+
+  /// Look up the current selection, as in the "Look Up" edit menu button on iOS.
+  /// Currently this is only implemented for iOS.
+  /// Throws an error if the selection is empty or collapsed.
+  Future<void> _lookUpSelection(SelectionChangedCause cause) async {
+    final String text =
+        textEditingValue.selection.textInside(textEditingValue.text);
+    if (text.isEmpty) {
+      return;
+    }
+    await SystemChannels.platform.invokeMethod(
+      'LookUp.invoke',
+      text,
+    );
+  }
+
+  @override
+  bool get searchWebEnabled {
+    if (defaultTargetPlatform != TargetPlatform.iOS) {
+      return false;
+    }
+
+    return !textEditingValue.selection.isCollapsed &&
+        textEditingValue.selection.textInside(textEditingValue.text).trim() !=
+            '';
+  }
+
+  /// Launch a web search on the current selection,
+  /// as in the "Search Web" edit menu button on iOS.
+  ///
+  /// Currently this is only implemented for iOS.
+  Future<void> _searchWebForSelection(SelectionChangedCause cause) async {
+    final String text =
+        textEditingValue.selection.textInside(textEditingValue.text);
+    if (text.isNotEmpty) {
+      await SystemChannels.platform.invokeMethod(
+        'SearchWeb.invoke',
+        text,
+      );
+    }
+  }
+
+  @override
+  bool get shareEnabled {
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+      case TargetPlatform.iOS:
+        return !textEditingValue.selection.isCollapsed &&
+            textEditingValue.selection
+                    .textInside(textEditingValue.text)
+                    .trim() !=
+                '';
+      case TargetPlatform.macOS:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        return false;
+    }
+  }
+
+  /// Launch the share interface for the current selection,
+  /// as in the "Share..." edit menu button on iOS.
+  ///
+  /// Currently this is only implemented for iOS and Android.
+  Future<void> _shareSelection(SelectionChangedCause cause) async {
+    final String text =
+        textEditingValue.selection.textInside(textEditingValue.text);
+    if (text.isNotEmpty) {
+      await SystemChannels.platform.invokeMethod(
+        'Share.invoke',
+        text,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Actions(
@@ -946,8 +1112,8 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
                 minLines: null,
                 expands: false, // expands to height of parent.
                 strutStyle: null,
-                selectionColor: Colors.blue.withOpacity(0.40),
-                textScaleFactor: MediaQuery.textScaleFactorOf(context),
+                selectionColor: Colors.blue.withAlpha(102),
+                textScaler: MediaQuery.textScalerOf(context),
                 textAlign: TextAlign.left,
                 textDirection: _textDirection,
                 locale: Localizations.maybeLocaleOf(context),
@@ -957,7 +1123,6 @@ class BasicTextInputClientState extends State<BasicTextInputClient>
                 obscureText:
                     false, // This is a non-private text field that does not require obfuscation.
                 offset: position,
-                onCaretChanged: null,
                 rendererIgnoresPointer: true,
                 cursorWidth: 2.0,
                 cursorHeight: null,
@@ -1000,14 +1165,13 @@ class _Editable extends MultiChildRenderObjectWidget {
     required this.expands,
     this.strutStyle,
     this.selectionColor,
-    required this.textScaleFactor,
+    required this.textScaler,
     required this.textAlign,
     required this.textDirection,
     this.locale,
     required this.obscuringCharacter,
     required this.obscureText,
     required this.offset,
-    this.onCaretChanged,
     this.rendererIgnoresPointer = false,
     required this.cursorWidth,
     this.cursorHeight,
@@ -1050,7 +1214,7 @@ class _Editable extends MultiChildRenderObjectWidget {
   final bool expands;
   final StrutStyle? strutStyle;
   final Color? selectionColor;
-  final double textScaleFactor;
+  final TextScaler textScaler;
   final TextAlign textAlign;
   final TextDirection textDirection;
   final Locale? locale;
@@ -1059,7 +1223,6 @@ class _Editable extends MultiChildRenderObjectWidget {
   final TextHeightBehavior? textHeightBehavior;
   final TextWidthBasis textWidthBasis;
   final ViewportOffset offset;
-  final CaretChangedHandler? onCaretChanged;
   final bool rendererIgnoresPointer;
   final double cursorWidth;
   final double? cursorHeight;
@@ -1090,13 +1253,12 @@ class _Editable extends MultiChildRenderObjectWidget {
       expands: expands,
       strutStyle: strutStyle,
       selectionColor: selectionColor,
-      textScaleFactor: textScaleFactor,
+      textScaler: textScaler,
       textAlign: textAlign,
       textDirection: textDirection,
       locale: locale ?? Localizations.maybeLocaleOf(context),
       selection: value.selection,
       offset: offset,
-      onCaretChanged: onCaretChanged,
       ignorePointer: rendererIgnoresPointer,
       obscuringCharacter: obscuringCharacter,
       obscureText: obscureText,
@@ -1132,13 +1294,12 @@ class _Editable extends MultiChildRenderObjectWidget {
       ..expands = expands
       ..strutStyle = strutStyle
       ..selectionColor = selectionColor
-      ..textScaleFactor = textScaleFactor
+      ..textScaler = textScaler
       ..textAlign = textAlign
       ..textDirection = textDirection
       ..locale = locale ?? Localizations.maybeLocaleOf(context)
       ..selection = value.selection
       ..offset = offset
-      ..onCaretChanged = onCaretChanged
       ..ignorePointer = rendererIgnoresPointer
       ..textHeightBehavior = textHeightBehavior
       ..textWidthBasis = textWidthBasis
